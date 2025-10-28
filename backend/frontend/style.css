@@ -94,6 +94,7 @@ h1, h2, h3, h4 {
   color: var(--gray-300);
 }
 
+/* Botón del carrito */
 .cart-btn {
   background: var(--vino-600);
   border: none;
@@ -269,6 +270,8 @@ h1, h2, h3, h4 {
   min-height: 40px;
 }
 
+/* --- ESTILOS DEL FOOTER DE LA TARJETA Y SELECTOR DE CANTIDAD --- */
+
 .card-footer {
   display: flex;
   justify-content: space-between;
@@ -280,17 +283,89 @@ h1, h2, h3, h4 {
   font-weight: bold;
   color: var(--vino-600);
   font-size: 1rem;
+  /* CORRECCIÓN: Agregar margen a la derecha para separar del selector */
+  margin-right: 12px; 
 }
 
+/* Contenedor del selector */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 0; 
+}
+
+/* Estilos de los botones - y + */
+.quantity-selector .quantity-btn {
+  background-color: var(--gray-100);
+  color: var(--gray-700);
+  padding: 5px 10px;
+  border: 1px solid var(--gray-300);
+  cursor: pointer;
+  width: 30px; 
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 0;
+  box-sizing: border-box; 
+  transition: background 0.2s ease;
+}
+
+/* Estado deshabilitado del botón '-' cuando la cantidad es 1 */
+.quantity-selector .quantity-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background-color: #f7f7f7;
+}
+
+.quantity-selector .minus-btn {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.quantity-selector .plus-btn {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* Hover en los botones de cantidad */
+.quantity-selector .quantity-btn:not(:disabled):hover {
+    background-color: var(--gray-300);
+}
+
+/* Estilos para el número de la cantidad */
+.quantity-selector .quantity-display {
+  padding: 5px 10px;
+  border-top: 1px solid var(--gray-300);
+  border-bottom: 1px solid var(--gray-300);
+  width: 30px; 
+  text-align: center;
+  font-weight: bold;
+  background-color: var(--white);
+  height: 30px;
+  line-height: 20px;
+  box-sizing: border-box;
+  border-left: none; 
+  border-right: none;
+}
+
+/* Botón principal "Agregar" */
 .btn-primary {
   background: var(--vino-600);
   color: var(--white);
   border: none;
   border-radius: 6px;
+  /* Ajuste de padding para alineación */
   padding: 6px 10px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: background 0.2s ease;
+
+  /* Estilos específicos para el botón "Agregar" en el card-footer */
+  margin-left: 10px;
+  flex-grow: 1; 
+  padding: 10px 15px; /* Más padding para que se vea más grande y alineado */
 }
 
 .btn-primary:hover {
@@ -335,11 +410,25 @@ h1, h2, h3, h4 {
     gap: 12px;
   }
 
-  .search-wrap input {
-    width: 180px;
+  .search-wrap {
+      width: 100%; /* Ocupa todo el ancho en móvil */
   }
 
   .site-title {
     font-size: 1rem;
+  }
+  
+  .header-right {
+      flex-wrap: wrap;
+      justify-content: center;
+  }
+  
+  .brand .logo {
+      height: 50px;
+  }
+  
+  /* Ajuste para que la cuadrícula se vea bien en pantallas pequeñas */
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }

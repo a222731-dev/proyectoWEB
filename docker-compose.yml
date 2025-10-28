@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  # NODO 1
+  db_nodo1: # <-- ¡Importante! Coincide con el DB1_HOST
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: datos_principales # <-- Coincide con la conexión en index.js
+      POSTGRES_USER: user_bddd      # <-- Coincide con DB_USER en index.js
+      POSTGRES_PASSWORD: superclave # <-- Coincide con DB_PASS en index.js
+    ports:
+      - "5432:5432"
+    volumes:
+      - nodo1_data:/var/lib/postgresql/data
+
+  # NODO 2
+  db_nodo2: # <-- ¡Importante! Coincide con el DB2_HOST
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: datos_secundarios # <-- Coincide con la conexión en index.js
+      POSTGRES_USER: user_bddd
+      POSTGRES_PASSWORD: superclave
+    ports:
+      - "5433:5432"
+    volumes:
+      - nodo2_data:/var/lib/postgresql/data
+
+  # SERVIDOR BACKEND (Node.js)
+  backend_server:
+    build:
+      context: ./backend 
+      dockerfile: Dockerfile
+    container_name: bddd_backend
+    ports:
+      - "8080:8080"
+    environment: # Variables que Node.js leerá
+      DB1_HOST: db_nodo1 # Nombre del servicio para el nodo 1
+      DB2_HOST: db_nodo2 # Nombre del servicio para el nodo 2
+      DB_USER: user_bddd
+      DB_PASS: superclave
+    depends_on:
+      - db_nodo1 
+      - db_nodo2
+
+volumes:
+  nodo1_data:
+  nodo2_data:
