@@ -4,18 +4,14 @@ const cors = require('cors');
 const path = require('path'); 
 
 const app = express();
-app.use(express.json()); // Permite a Express leer cuerpos de peticiones en formato JSON
-app.use(cors()); // Habilita CORS para permitir peticiones desde tu frontend (navegador)
+app.use(express.json());
+app.use(cors());
 
-// ----------------------------------------------------------------
-// CONFIGURACIÓN DE CONEXIÓN A LOS NODOS DE LA BDDD
-// Las variables de entorno provienen de docker-compose.yml
-// ----------------------------------------------------------------
-
+// --- Configuración de Conexión a Nodos (Sucursales) ---
 const DB_USER = process.env.DB_USER || 'user_bddd';
 const DB_PASS = process.env.DB_PASS || 'superclave';
 
-// Pool de conexión para el NODO 1 (db_nodo1)
+// Pool para SUCURSAL 1 (Nodo 1)
 const pool1 = new Pool({
   host: process.env.DB1_HOST || 'db_nodo1', 
   port: 5432,
@@ -24,7 +20,7 @@ const pool1 = new Pool({
   password: DB_PASS,
 });
 
-// Pool de conexión para el NODO 2 (db_nodo2)
+// Pool para SUCURSAL 2 (Nodo 2)
 const pool2 = new Pool({
   host: process.env.DB2_HOST || 'db_nodo2',
   port: 5432,
@@ -33,113 +29,98 @@ const pool2 = new Pool({
   password: DB_PASS,
 });
 
-// Función de prueba para verificar que las conexiones están vivas
+// Función de prueba de conexión
 async function testConnections() {
     try {
         await pool1.query('SELECT 1');
-        console.log('✅ Conexión a NODO 1 (datos_principales) exitosa.');
+        console.log('✅ Conexión a SUCURSAL 1 (datos_principales) exitosa.');
         await pool2.query('SELECT 1');
-        console.log('✅ Conexión a NODO 2 (datos_secundarios) exitosa.');
+        console.log('✅ Conexión a SUCURSAL 2 (datos_secundarios) exitosa.');
     } catch (err) {
-        console.error('❌ Error al conectar a una de las bases de datos:', err.message);
-        // Si no puede conectar, el servidor debería cerrarse para evitar errores.
+        console.error('❌ Error al conectar a una de las sucursales:', err.message);
         process.exit(1); 
     }
 }
 
-// ----------------------------------------------------------------
-// SERVIR ARCHIVOS ESTÁTICOS (FRONTEND)
-// ----------------------------------------------------------------
-
-// Le dice a Express que use el directorio actual (__dirname) para servir
-// archivos estáticos (index.html, style.css, script.js, y la carpeta /img)
-app.use(express.static(__dirname));
-
-// ¡Ya no necesitamos la ruta app.get('/')!
-// express.static buscará y servirá automáticamente 'index.html'
-// cuando alguien visite http://localhost:8080/
-
+// --- Servir Frontend ---
+app.use(express.static(__dirname)); // Sirve index.html, style.css, script.js y /img
 
 // ----------------------------------------------------------------
-// LÓGICA DE DISTRIBUCIÓN (BACKEND - El núcleo de tu BDDD)
+// ENDPOINTS DE LA API (El núcleo de la BDDD)
 // ----------------------------------------------------------------
 
 /**
- * Endpoint POST /datos
- * Recibe un dato y lo inserta en el nodo de PostgreSQL correspondiente
+ * Endpoint GET /api/productos
+ * Obtiene el catálogo de productos.
+ * Como los productos (catálogo) están REPLICADOS, solo consultamos 1 nodo.
  */
-app.post('/datos', async (req, res) => {
-    
-    // Declaramos las variables aquí para que el 'catch' pueda verlas
-    let targetPool;
-    let targetDbName = 'NODO DESCONOCIDO'; // Valor por defecto para errores
-
+app.get('/api/productos', async (req, res) => {
     try {
-        const { id, nombre, valor } = req.body;
-        
-        // VALIDACIÓN BÁSICA
-        if (!id || !nombre) {
-            return res.status(400).send({ error: 'Faltan campos (id y nombre son requeridos).' });
-        }
-
-        // Lógica de Particionamiento (Horizontal Sharding)
-        const isEven = id % 2 === 0;
-        targetPool = isEven ? pool2 : pool1;
-        targetDbName = isEven ? 'NODO 2' : 'NODO 1'; // <-- CORRECCIÓN #1 (Arreglado el tipeo)
-
-        // <-- CORRECCIÓN #2 (Arreglado el $2 en la consulta)
-        const query = 'INSERT INTO items(id, nombre, valor) VALUES($1, $2, $3)';
-        await targetPool.query(query, [id, nombre, valor]);
-        
-        console.log(`Dato ID ${id} insertado en ${targetDbName}`);
-        res.status(201).send({ 
-            message: `Dato insertado correctamente.`,
-            nodo: targetDbName 
-        });
-
+        // Consultamos solo el Nodo 1 (Sucursal 1) porque los productos son idénticos
+        const result = await pool1.query('SELECT * FROM productos ORDER BY id ASC');
+        res.json(result.rows);
     } catch (error) {
-        // <-- CORRECCIÓN #3 (El 'scope' de targetDbName ahora es correcto)
-        console.error(`Error al insertar el dato en ${targetDbName}:`, error.message);
-        res.status(500).send({ 
-            error: `Error al procesar la solicitud en ${targetDbName}.`,
-            detalle: error.message 
-        });
+        console.error('Error al consultar productos:', error.message);
+        res.status(500).send({ error: 'Error al consultar el catálogo.' });
     }
 });
 
-
 /**
- * Endpoint GET /datos
- * Consulta ambos nodos y combina los resultados (Scatter/Gather)
+ * Endpoint GET /api/inventario
+ * Obtiene el stock de TODOS los productos en AMBAS sucursales.
+ * ¡Esta es la consulta distribuida clave!
  */
-app.get('/datos', async (req, res) => {
+app.get('/api/inventario', async (req, res) => {
+    // Consultas para obtener el inventario de ambas sucursales
+    const query1 = 'SELECT producto_data_id, stock FROM inventario'; // Nodo 1
+    const query2 = 'SELECT producto_data_id, stock FROM inventario'; // Nodo 2
+
     try {
-        // Ejecuta consultas en ambos nodos de forma concurrente
-        const [result1, result2] = await Promise.all([
-            pool1.query('SELECT * FROM items ORDER BY id ASC'),
-            pool2.query('SELECT * FROM items ORDER BY id ASC'),
+        // Ejecutamos consultas en paralelo a ambos nodos
+        const [inventarioSuc1, inventarioSuc2] = await Promise.all([
+            pool1.query(query1), // Stock en Nodo 1
+            pool2.query(query2)  // Stock en Nodo 2
         ]);
 
-        // Combina los resultados de ambos nodos en un solo array
-        const todosLosDatos = [...result1.rows, ...result2.rows];
+        // Combinamos los resultados en un objeto fácil de usar para el frontend
+        // La clave será el 'prod-1', 'prod-2', etc.
+        const inventarioCombinado = {};
 
-        // Envía el resultado combinado al frontend
-        res.json(todosLosDatos);
+        // Procesar stock de Sucursal 1
+        for (const item of inventarioSuc1.rows) {
+            inventarioCombinado[item.producto_data_id] = {
+                sucursal_1: item.stock,
+                sucursal_2: 0 // Valor por defecto
+            };
+        }
+
+        // Procesar y combinar stock de Sucursal 2
+        for (const item of inventarioSuc2.rows) {
+            if (inventarioCombinado[item.producto_data_id]) {
+                // Si ya existe la entrada (del Nodo 1), añade el stock del Nodo 2
+                inventarioCombinado[item.producto_data_id].sucursal_2 = item.stock;
+            } else {
+                // Si por alguna razón el producto solo existe en Nodo 2
+                inventarioCombinado[item.producto_data_id] = {
+                    sucursal_1: 0,
+                    sucursal_2: item.stock
+                };
+            }
+        }
+        
+        res.json(inventarioCombinado);
+
     } catch (error) {
-        console.error('Error al consultar datos de la BDDD:', error.message);
-        res.status(500).send({ error: 'Error al consultar las bases de datos distribuidas.' });
+        console.error('Error en consulta distribuida de inventario:', error.message);
+        res.status(500).send({ error: 'Error al consultar inventario.' });
     }
 });
-
 
 // ----------------------------------------------------------------
 // INICIALIZACIÓN DEL SERVIDOR
 // ----------------------------------------------------------------
-
 const PORT = 8080;
-
 app.listen(PORT, async () => {
-    console.log(`🚀 Servidor Backend corriendo en http://localhost:${PORT}`);
-    // Opcional: Probar las conexiones antes de aceptar tráfico
+    console.log(`🚀 Servidor (Sede Central) corriendo en http://localhost:${PORT}`);
     await testConnections();
 });

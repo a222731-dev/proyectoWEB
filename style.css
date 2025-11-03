@@ -432,3 +432,142 @@ h1, h2, h3, h4 {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }
+
+/* Contenedor principal de Stock:
+   Ahora es una columna vertical y centrada */
+.stock-info {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+    
+    /* Configuración de Columna */
+    display: flex;
+    flex-direction: column; /* Apila los elementos verticalmente */
+    align-items: center;    /* Centra todo horizontalmente */
+    gap: 4px;               /* Espacio entre el número, el botón y el stock 2 */
+}
+
+/* Estilo para CUALQUIER línea de stock */
+.stock-sucursal {
+    font-weight: 500;
+}
+
+/* Estilo SÓLO para el número de Stock 1 (Principal) */
+.stock-sucursal-1 {
+    font-weight: 700; /* Más grueso */
+    font-size: 1.1rem;  /* Más grande */
+    color: #333;
+}
+
+/* Estilo para "Agotado" (se aplica a Suc 1 y Suc 2) */
+.stock-sucursal.agotado {
+    color: #d9534f;
+    font-weight: 700;
+}
+
+/* Clase para ocultar/mostrar el stock de la Sucursal 2 */
+.stock-sucursal-2.hidden {
+    display: none;
+}
+
+/* Estilo para el botón de "búsqueda" (lupa) */
+.btn-search-suc2 {
+    background: none;
+    border: 1px solid #ddd; /* Borde ligero para que parezca un botón */
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Ya no necesita margen, el contenedor flex lo centra */
+}
+
+.btn-search-suc2:hover {
+    background: #f0f0f0;
+}
+
+/* ¡IMPORTANTE!
+Ya no ocultamos el botón después del clic, 
+porque ahora sirve para ocultar y mostrar.
+*/
+
+/* Panel de Login de Admin */
+.admin-panel {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+#admin-login-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Para buena vista en móviles */
+}
+
+#admin-login-form label {
+    font-weight: 500;
+}
+
+#admin-pass {
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 150px;
+}
+
+.admin-error-msg {
+    color: #d9534f; /* Color rojo para error */
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+#admin-status {
+    font-weight: 500;
+    color: #31708f; /* Un tono azul para "logueado" */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+#admin-logout-btn {
+    background: none;
+    border: 1px solid #a94442;
+    color: #a94442;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+#admin-logout-btn:hover {
+    background: #a94442;
+    color: white;
+}
+
+/* Clase global para ocultar elementos */
+.hidden {
+    display: none !important;
+}
+
+/* ------------------------------------------------- */
+/* REGLA DE VISIBILIDAD DE BDDD (¡MUY IMPORTANTE!)  */
+/* ------------------------------------------------- */
+
+/* 1. Por defecto, OCULTA el botón de búsqueda de stock 2 */
+.btn-search-suc2 {
+    display: none; 
+}
+
+/* 2. MUESTRA el botón SÓLO SI el grid (o su contenedor)
+      tiene la clase 'admin-view' */
+.grid.admin-view .btn-search-suc2 {
+    display: inline-flex; /* O 'block' o 'flex' según tu layout de botón */
+}
