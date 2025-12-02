@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ElectroShop</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="img/icon.png">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="img/logo.png" alt="Logo tienda" class="logo">
+      </div>
+
+      <div class="header-right">
+        <div class="search-wrap">
+          <input type="search" placeholder="Buscar componente, modelo o referencia..." aria-label="Buscar">
+          <button class="btn search-btn">🔍</button>
+        </div>
+
+        <div class="title-wrap">
+          <h1 class="site-title">ElectroShop • Componentes</h1>
+          <p class="site-sub">Desde lo básico hasta lo innovador, todo a tu alcance.</p>
+        </div>
+
+        <div class="cart">
+          <button class="btn cart-btn">🛒 <span class="cart-count">0</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <aside class="filters">
+      <h3>Categorías</h3>
+      <div class="category-buttons">
+        <button class="btn-cat active" data-filter="Todos">Todos</button>
+        <button class="btn-cat" data-filter="resistencias">Resistencias</button>
+        <button class="btn-cat" data-filter="capacitores">Capacitores</button>
+        <button class="btn-cat" data-filter="placas">Placas</button>
+        <button class="btn-cat" data-filter="sensores">Sensores</button>
+        <button class="btn-cat" data-filter="leds">LEDs</button>
+        <button class="btn-cat" data-filter="displays">Displays</button>
+      </div>
+
+      <label class="checkbox">
+        <input type="checkbox"> En stock
+      </label>
+      <button class="btn btn-ghost">Limpiar</button>
+    </aside>
+
+    <section class="catalog">
+      <div class="catalog-header">
+        <h2>Todos nuestros componentes</h2>
+        <p class="muted">Explora nuestra selección completa de artículos electrónicos.</p>
+      </div>
+
+      <div class="admin-panel">
+        <form id="admin-login-form">
+          <label for="admin-pass">Admin Login:</label>
+          <input type="password" id="admin-pass" placeholder="Password">
+          <button type="submit" id="admin-login-btn" class="btn btn-secondary">Login</button>
+        </form>
+        <div id="admin-status" class="hidden">
+          <span id="admin-welcome">Bienvenido, Admin (Viendo stock de ambas sucursales).</span>
+          <button id="admin-logout-btn">(Salir)</button>
+        </div>
+        <p id="admin-error-msg" class="admin-error-msg hidden"></p>
+      </div>
+
+      <div class="grid">
+        
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; 2025 ElectroShop • Hecho por Julio Ángel</p>
+      <p class="muted">Contacto: a222731@ugm.com.mx</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

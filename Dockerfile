@@ -13,6 +13,7 @@ RUN npm install
 # --- Copiar explícitamente los archivos de la app ---
 COPY index.js .
 COPY index.html .
+COPY tienda.html .
 COPY style.css .
 COPY script.js .
 
