@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ElectroShop</title>
+  <title>ElectroShop • Tienda</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="img/icon.png">
 </head>
@@ -13,18 +13,20 @@
   <header class="site-header">
     <div class="header-inner">
       <div class="brand">
-        <img src="img/logo.png" alt="Logo tienda" class="logo">
+        <a href="index.html">
+          <img src="img/logo.png" alt="Logo tienda" class="logo">
+        </a>
       </div>
 
       <div class="header-right">
         <div class="search-wrap">
-          <input type="search" placeholder="Buscar componente, modelo o referencia..." aria-label="Buscar">
+          <input type="search" placeholder="Buscar componente (ej: sensor)..." aria-label="Buscar">
           <button class="btn search-btn">🔍</button>
         </div>
 
         <div class="title-wrap">
           <h1 class="site-title">ElectroShop • Componentes</h1>
-          <p class="site-sub">Desde lo básico hasta lo innovador, todo a tu alcance.</p>
+          <p class="site-sub">Catálogo en tiempo real • BDDD</p>
         </div>
 
         <div class="cart">
@@ -35,6 +37,7 @@
   </header>
 
   <main class="container">
+    
     <aside class="filters">
       <h3>Categorías</h3>
       <div class="category-buttons">
@@ -50,40 +53,60 @@
       <label class="checkbox">
         <input type="checkbox"> En stock
       </label>
-      <button class="btn btn-ghost">Limpiar</button>
+      
+      <button class="btn btn-ghost">Limpiar Filtros</button>
     </aside>
 
     <section class="catalog">
       <div class="catalog-header">
-        <h2>Todos nuestros componentes</h2>
-        <p class="muted">Explora nuestra selección completa de artículos electrónicos.</p>
+        <h2>Catálogo de Productos</h2>
+        <p class="muted">Explora el stock disponible en nuestras sucursales.</p>
       </div>
 
       <div class="admin-panel">
         <form id="admin-login-form">
           <label for="admin-pass">Admin Login:</label>
-          <input type="password" id="admin-pass" placeholder="Password">
+          <input type="password" id="admin-pass" placeholder="Password (admin)">
           <button type="submit" id="admin-login-btn" class="btn btn-secondary">Login</button>
         </form>
+        
         <div id="admin-status" class="hidden">
-          <span id="admin-welcome">Bienvenido, Admin (Viendo stock de ambas sucursales).</span>
+          <span id="admin-welcome">Bienvenido, Admin (Modo: Sucursal 2 Remota).</span>
           <button id="admin-logout-btn">(Salir)</button>
         </div>
         <p id="admin-error-msg" class="admin-error-msg hidden"></p>
       </div>
 
       <div class="grid">
-        
-      </div>
+        </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
       <p>&copy; 2025 ElectroShop • Hecho por Julio Ángel</p>
-      <p class="muted">Contacto: a222731@ugm.com.mx</p>
+      <p class="muted">Sistema de Base de Datos Distribuidas</p>
     </div>
   </footer>
+
+  <div id="cart-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Resumen de Compra</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      
+      <p id="modal-branch-info" class="branch-badge">Cargando...</p>
+
+      <div id="cart-items-container" class="cart-items-list">
+        </div>
+
+      <div class="modal-footer">
+        <h3>Total: $<span id="cart-total-display">0.00</span></h3>
+        <button id="checkout-btn" class="btn btn-primary">Pagar y Descontar Stock</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

@@ -674,3 +674,69 @@ porque ahora sirve para ocultar y mostrar.
     font-size: 2rem;
   }
 }
+
+/* --- ESTILOS DEL MODAL (CARRITO) --- */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6); /* Fondo oscuro transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  background: none; border: none;
+  font-size: 1.5rem; cursor: pointer;
+  color: #888;
+}
+
+.branch-badge {
+  background: #eee;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.cart-items-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.modal-footer {
+  text-align: right;
+}
